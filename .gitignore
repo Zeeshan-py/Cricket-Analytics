@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# build artifacts
+*.tsbuildinfo
+
+# local environment
+.env
+.env*.local
+
+# logs
+*.log
