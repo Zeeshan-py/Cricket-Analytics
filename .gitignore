@@ -15,3 +15,15 @@ out/
 
 # logs
 *.log
+
+# large raw cricket datasets should stay external to the repository.
+Downloads/all_json/
+all_json/
+data/raw/
+data/cricsheet/
+supabase/.temp/
+
+# Keep small parser fixtures under data/sample/cricsheet tracked.
+!data/sample/
+!data/sample/cricsheet/
+!data/sample/cricsheet/*.json

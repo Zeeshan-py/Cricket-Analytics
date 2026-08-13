@@ -1,0 +1,8 @@
+project_id = "lciqgzfnwrnmwxadiyom"
+
+[db.seed]
+enabled = true
+sql_paths = [
+  "./seeds/001_reference_formats.sql",
+  "./seeds/002_team_aliases.sql"
+]

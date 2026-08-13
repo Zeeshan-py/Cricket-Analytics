@@ -6,9 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "data:inspect": "tsx scripts/import/inspectDataset.ts",
+    "data:import": "tsx scripts/import/importCricketCsv.ts",
+    "data:inspect:cricsheet": "tsx scripts/import/inspectCricsheet.ts",
+    "data:import:cricsheet": "tsx scripts/import/importCricsheetJson.ts",
+    "data:import:cricsheet:dry": "tsx scripts/import/importCricsheetJson.ts --dry-run",
+    "db:health": "tsx scripts/health/checkSupabase.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.86.0",
     "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
@@ -17,6 +24,8 @@
     "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
+    "supabase": "^2.114.0",
+    "tsx": "4.21.0",
     "typescript": "5.8.3"
   }
 }
