@@ -17,7 +17,7 @@ export function Footer() {
           </Link>
           <p>{siteConfig.description}</p>
           <p className="footer-note">
-            Data currently reflects the verified Supabase import only. Raw Cricsheet JSON files remain outside the repository and are not uploaded to storage.
+            Cricket Atlas helps fans, analysts, and learners explore scorecards, player profiles, team trends, match results, records, and cricket analytics in one clean public website.
           </p>
         </div>
 
