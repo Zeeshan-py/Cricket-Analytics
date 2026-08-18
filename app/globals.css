@@ -1444,3 +1444,340 @@ main:focus {
     animation-iteration-count: 1 !important;
   }
 }
+
+.player-explorer-panel,
+.player-profile-header,
+.profile-section,
+.profile-chart,
+.profile-stat-card,
+.player-result-card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: 0 1px 0 rgba(16, 32, 26, 0.03);
+}
+
+.player-explorer-panel {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 26px;
+  padding: 18px;
+}
+
+.player-explorer-panel > p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.player-filter-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(150px, 0.8fr)) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.player-filter-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.player-filter-form span {
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.player-filter-form input,
+.player-filter-form select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: #fff;
+  color: var(--color-ink);
+  padding: 0 11px;
+}
+
+.player-filter-form button {
+  min-height: 42px;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-control);
+  background: var(--color-ink);
+  color: #fff;
+  font-weight: 850;
+  padding: 0 16px;
+}
+
+.player-results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.player-result-card {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.player-result-card:hover {
+  border-color: rgba(19, 111, 67, 0.45);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.player-result-card h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.player-result-card h2 a:hover {
+  color: var(--color-primary-dark);
+}
+
+.player-result-card p:not(.eyebrow) {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+}
+
+.player-result-card dl,
+.player-profile-header dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.player-result-card dl {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.player-result-card dt,
+.player-profile-header dt,
+.profile-stat-card p {
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.player-result-card dd,
+.player-profile-header dd {
+  margin: 3px 0 0;
+  color: var(--color-ink);
+  font-weight: 850;
+}
+
+.player-result-card dl div,
+.player-profile-header dl div {
+  border-radius: 6px;
+  background: var(--color-surface-strong);
+  padding: 10px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.pagination a,
+.pagination span {
+  min-height: 42px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  padding: 9px 13px;
+  font-weight: 850;
+}
+
+.pagination span {
+  color: var(--color-muted);
+}
+
+.pagination a:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.pagination a.is-disabled {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.player-profile-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  margin-bottom: 24px;
+  padding: 22px;
+}
+
+.player-profile-header img {
+  width: 132px;
+  aspect-ratio: 1;
+  border-radius: var(--radius-card);
+  object-fit: cover;
+}
+
+.player-profile-header h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.player-profile-header dl {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.player-profile-header a {
+  color: var(--color-primary-dark);
+}
+
+.profile-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.profile-stat-card {
+  padding: 18px;
+}
+
+.profile-stat-card p {
+  margin: 0;
+}
+
+.profile-stat-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.profile-stat-card span {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-subtle);
+  font-size: 13px;
+}
+
+.profile-section {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 20px;
+}
+
+.profile-section h2,
+.profile-chart h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.profile-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.profile-chart {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.profile-chart__bars {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(18px, 1fr));
+  min-height: 220px;
+  align-items: end;
+  gap: 9px;
+  border-bottom: 1px solid var(--color-line);
+  padding-top: 12px;
+}
+
+.profile-chart__bars div {
+  display: grid;
+  min-height: 190px;
+  align-items: end;
+  gap: 6px;
+  text-align: center;
+}
+
+.profile-chart__bars span {
+  min-height: 8px;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, var(--color-gold), var(--color-primary));
+}
+
+.profile-chart__bars strong {
+  color: var(--color-ink);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.profile-chart__bars small {
+  overflow: hidden;
+  color: var(--color-subtle);
+  font-size: 10px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1120px) {
+  .player-filter-form,
+  .player-results-grid,
+  .profile-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .player-filter-form button {
+    grid-column: 1 / -1;
+  }
+
+  .player-profile-header dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .player-filter-form,
+  .player-results-grid,
+  .player-result-card dl,
+  .player-profile-header,
+  .player-profile-header dl,
+  .profile-stat-grid,
+  .profile-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    align-items: stretch;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .player-profile-header h1 {
+    font-size: 28px;
+  }
+
+  .profile-chart__bars {
+    overflow-x: auto;
+  }
+}

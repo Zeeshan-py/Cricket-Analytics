@@ -245,7 +245,7 @@ async function verifyDataAccessFunctions() {
     awards
   ] = await Promise.all([
     getTeams(),
-    getPlayers({ limit: 5 }),
+    getPlayers({ pageSize: 5 }),
     getMatchesByFormat("test", { limit: 5 }),
     getMatchesByYear(new Date().getFullYear(), { limit: 5 }),
     getSeriesSummaries({ limit: 5 }),
@@ -256,7 +256,7 @@ async function verifyDataAccessFunctions() {
 
   return {
     getTeams: teams.length,
-    getPlayers: players.length,
+    getPlayers: players.players.length,
     getMatchesByFormatTest: testMatches.length,
     getMatchesByYearCurrent: currentYearMatches.length,
     getSeriesSummaries: seriesSummaries.length,

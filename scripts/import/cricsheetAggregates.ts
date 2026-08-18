@@ -101,6 +101,10 @@ function bowlingCreditWicket(kind: string) {
   return !["run out", "retired hurt", "retired not out", "obstructing the field"].includes(kind.toLowerCase());
 }
 
+function hasPlayerName(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
 export function aggregateInningsPlayerStats(match: NormalizedCricsheetMatch, innings: NormalizedCricsheetInnings) {
   const battingLines = new Map<string, BattingLine>();
   const bowlingLines = new Map<string, BowlingLine>();
@@ -136,7 +140,7 @@ export function aggregateInningsPlayerStats(match: NormalizedCricsheetMatch, inn
         dismissed.dismissed = true;
         dismissed.dismissalKind = wicket.kind;
         dismissed.bowler = bowlingCreditWicket(wicket.kind) ? delivery.bowler : null;
-        dismissed.fielder = wicket.fielders?.[0]?.name ?? null;
+        dismissed.fielder = wicket.fielders?.find((fielder) => hasPlayerName(fielder.name))?.name ?? null;
       }
 
       if (bowlingCreditWicket(wicket.kind)) {
@@ -144,6 +148,7 @@ export function aggregateInningsPlayerStats(match: NormalizedCricsheetMatch, inn
       }
 
       wicket.fielders?.forEach((fielder) => {
+        if (!hasPlayerName(fielder.name)) return;
         const fielding = ensureFieldingLine(fieldingLines, fielder.name, bowlingTeam, innings.inningsNumber);
         if (wicket.kind === "caught" || wicket.kind === "caught and bowled") fielding.catches += 1;
         if (wicket.kind === "stumped") fielding.stumpings += 1;

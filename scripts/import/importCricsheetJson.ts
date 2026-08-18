@@ -12,6 +12,7 @@ import type { CricketFormatCode } from "@/types/database";
 
 type SupabaseClient = ReturnType<typeof createImportSupabaseClient>;
 type IdMap = Map<string, string>;
+const UPSERT_CHUNK_SIZE = 500;
 
 function argValue(name: string) {
   const index = process.argv.findIndex((arg) => arg === name);
@@ -26,6 +27,18 @@ function argValue(name: string) {
 
 function hasFlag(name: string) {
   return process.argv.includes(name);
+}
+
+function chunkArray<T>(items: T[], chunkSize: number) {
+  const chunks: T[][] = [];
+  for (let index = 0; index < items.length; index += chunkSize) {
+    chunks.push(items.slice(index, index + chunkSize));
+  }
+  return chunks;
+}
+
+function hasPlayerName(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 async function checksumFile(filePath: string) {
@@ -65,12 +78,14 @@ async function upsertPlayer(
   name: string,
   options: { cricsheetId?: string | null; primaryTeamId?: string | null; country?: string | null } = {}
 ) {
+  if (!hasPlayerName(name)) throw new Error("Cannot upsert player without a name.");
+  const slug = slugify(name);
   const { data, error } = await supabase
     .from("players")
     .upsert(
       {
         name,
-        slug: slugify(name),
+        slug,
         full_name: name,
         cricsheet_id: options.cricsheetId ?? null,
         primary_team_id: options.primaryTeamId ?? null,
@@ -81,8 +96,51 @@ async function upsertPlayer(
     .select("id")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (options.cricsheetId && error.code === "23505" && error.message.includes("players_slug_key")) {
+      const { data: existingPlayer, error: existingError } = await supabase
+        .from("players")
+        .select("id,cricsheet_id")
+        .eq("slug", slug)
+        .single();
+
+      if (existingError) throw existingError;
+      if (!existingPlayer.cricsheet_id) {
+        const { data: updatedPlayer, error: updateError } = await supabase
+          .from("players")
+          .update({
+            cricsheet_id: options.cricsheetId,
+            primary_team_id: options.primaryTeamId ?? null,
+            country: options.country ?? null
+          })
+          .eq("id", existingPlayer.id)
+          .select("id")
+          .single();
+
+        if (updateError) throw updateError;
+        return updatedPlayer.id;
+      }
+
+      return existingPlayer.id;
+    }
+
+    throw error;
+  }
   return data.id;
+}
+
+async function resolvePlayerId(
+  supabase: SupabaseClient,
+  playerIds: IdMap,
+  name: string,
+  options: { cricsheetId?: string | null; primaryTeamId?: string | null; country?: string | null } = {}
+) {
+  const existing = playerIds.get(name);
+  if (existing) return existing;
+
+  const playerId = await upsertPlayer(supabase, name, options);
+  playerIds.set(name, playerId);
+  return playerId;
 }
 
 async function upsertVenue(supabase: SupabaseClient, venueName: string, city: string | null) {
@@ -165,14 +223,11 @@ async function importMatch(filePath: string, supabase: SupabaseClient, dryRun: b
   for (const player of match.players) {
     const alias = player.teamName ? resolveTeamAlias(player.teamName) : null;
     const primaryTeamId = player.teamName ? teamIds.get(player.teamName) ?? null : null;
-    playerIds.set(
-      player.name,
-      await upsertPlayer(supabase, player.name, {
-        cricsheetId: player.cricsheetId,
-        primaryTeamId,
-        country: alias?.country ?? null
-      })
-    );
+    await resolvePlayerId(supabase, playerIds, player.name, {
+      cricsheetId: player.cricsheetId,
+      primaryTeamId,
+      country: alias?.country ?? null
+    });
   }
 
   const venueId = match.venueName ? await upsertVenue(supabase, match.venueName, match.city) : null;
@@ -243,7 +298,7 @@ async function importMatch(filePath: string, supabase: SupabaseClient, dryRun: b
   }
 
   for (const awardPlayer of match.playerOfMatch) {
-    const playerId = playerIds.get(awardPlayer) ?? (await upsertPlayer(supabase, awardPlayer));
+    const playerId = await resolvePlayerId(supabase, playerIds, awardPlayer);
     await supabase.from("awards").upsert(
       {
         award_name: "Player of the Match",
@@ -289,117 +344,141 @@ async function importMatch(filePath: string, supabase: SupabaseClient, dryRun: b
 
     if (inningsError) throw inningsError;
 
+    const deliveryRows = [];
     for (const delivery of innings.deliveries) {
-      const batterId = playerIds.get(delivery.batter) ?? (await upsertPlayer(supabase, delivery.batter));
-      const bowlerId = playerIds.get(delivery.bowler) ?? (await upsertPlayer(supabase, delivery.bowler));
-      const nonStrikerId = playerIds.get(delivery.nonStriker) ?? (await upsertPlayer(supabase, delivery.nonStriker));
-      await supabase.from("match_deliveries").upsert(
-        {
-          match_id: dbMatch.id,
-          innings_id: dbInnings.id,
-          innings_number: delivery.inningsNumber,
-          batting_team_id: battingTeamId,
-          bowling_team_id: bowlingTeamId,
-          over_number: delivery.overNumber,
-          delivery_index: delivery.deliveryIndex,
-          actual_delivery: delivery.actualDelivery,
-          batter_id: batterId,
-          bowler_id: bowlerId,
-          non_striker_id: nonStrikerId,
-          runs_batter: delivery.runsBatter,
-          runs_extras: delivery.runsExtras,
-          runs_total: delivery.runsTotal,
-          extras: delivery.extras,
-          wickets: delivery.wickets,
-          replacements: delivery.replacements,
-          review: delivery.review,
-          non_boundary: delivery.nonBoundary,
-          raw_delivery: delivery.rawDelivery
-        },
-        { onConflict: "match_id,innings_number,over_number,delivery_index" }
-      );
+      const batterId = await resolvePlayerId(supabase, playerIds, delivery.batter);
+      const bowlerId = await resolvePlayerId(supabase, playerIds, delivery.bowler);
+      const nonStrikerId = await resolvePlayerId(supabase, playerIds, delivery.nonStriker);
+      deliveryRows.push({
+        match_id: dbMatch.id,
+        innings_id: dbInnings.id,
+        innings_number: delivery.inningsNumber,
+        batting_team_id: battingTeamId,
+        bowling_team_id: bowlingTeamId,
+        over_number: delivery.overNumber,
+        delivery_index: delivery.deliveryIndex,
+        actual_delivery: delivery.actualDelivery,
+        batter_id: batterId,
+        bowler_id: bowlerId,
+        non_striker_id: nonStrikerId,
+        runs_batter: delivery.runsBatter,
+        runs_extras: delivery.runsExtras,
+        runs_total: delivery.runsTotal,
+        extras: delivery.extras,
+        wickets: delivery.wickets,
+        replacements: delivery.replacements,
+        review: delivery.review,
+        non_boundary: delivery.nonBoundary,
+        raw_delivery: delivery.rawDelivery
+      });
+    }
+    for (const chunk of chunkArray(deliveryRows, UPSERT_CHUNK_SIZE)) {
+      const { error: deliveryError } = await supabase
+        .from("match_deliveries")
+        .upsert(chunk, { onConflict: "match_id,innings_number,over_number,delivery_index" });
+      if (deliveryError) throw deliveryError;
     }
 
     const aggregate = aggregateInningsPlayerStats(match, innings);
+    const battingRows = [];
     for (const line of aggregate.batting) {
-      const playerId = playerIds.get(line.player) ?? (await upsertPlayer(supabase, line.player));
-      const bowlerId = line.bowler ? playerIds.get(line.bowler) ?? (await upsertPlayer(supabase, line.bowler)) : null;
-      const fielderId = line.fielder ? playerIds.get(line.fielder) ?? (await upsertPlayer(supabase, line.fielder)) : null;
-      await supabase.from("batting_statistics").upsert(
-        {
-          match_id: dbMatch.id,
-          innings_id: dbInnings.id,
-          player_id: playerId,
-          team_id: battingTeamId,
-          runs: line.runs,
-          balls_faced: line.ballsFaced,
-          fours: line.fours,
-          sixes: line.sixes,
-          dismissal_kind: line.dismissalKind,
-          dismissed: line.dismissed,
-          bowler_id: bowlerId,
-          fielder_id: fielderId
-        },
-        { onConflict: "match_id,innings_id,player_id" }
-      );
+      const playerId = await resolvePlayerId(supabase, playerIds, line.player);
+      const bowlerId = line.bowler ? await resolvePlayerId(supabase, playerIds, line.bowler) : null;
+      const fielderId = line.fielder ? await resolvePlayerId(supabase, playerIds, line.fielder) : null;
+      battingRows.push({
+        match_id: dbMatch.id,
+        innings_id: dbInnings.id,
+        player_id: playerId,
+        team_id: battingTeamId,
+        runs: line.runs,
+        balls_faced: line.ballsFaced,
+        fours: line.fours,
+        sixes: line.sixes,
+        dismissal_kind: line.dismissalKind,
+        dismissed: line.dismissed,
+        bowler_id: bowlerId,
+        fielder_id: fielderId
+      });
     }
+    for (const chunk of chunkArray(battingRows, UPSERT_CHUNK_SIZE)) {
+      const { error: battingError } = await supabase
+        .from("batting_statistics")
+        .upsert(chunk, { onConflict: "match_id,innings_id,player_id" });
+      if (battingError) throw battingError;
+    }
+
+    const bowlingRows = [];
     for (const line of aggregate.bowling) {
-      const playerId = playerIds.get(line.player) ?? (await upsertPlayer(supabase, line.player));
-      await supabase.from("bowling_statistics").upsert(
-        {
-          match_id: dbMatch.id,
-          innings_id: dbInnings.id,
-          player_id: playerId,
-          team_id: bowlingTeamId,
-          balls: line.balls,
-          maidens: line.maidens,
-          runs_conceded: line.runsConceded,
-          wickets: line.wickets,
-          dot_balls: line.dotBalls,
-          wides: line.wides,
-          no_balls: line.noBalls
-        },
-        { onConflict: "match_id,innings_id,player_id" }
-      );
+      const playerId = await resolvePlayerId(supabase, playerIds, line.player);
+      bowlingRows.push({
+        match_id: dbMatch.id,
+        innings_id: dbInnings.id,
+        player_id: playerId,
+        team_id: bowlingTeamId,
+        balls: line.balls,
+        maidens: line.maidens,
+        runs_conceded: line.runsConceded,
+        wickets: line.wickets,
+        dot_balls: line.dotBalls,
+        wides: line.wides,
+        no_balls: line.noBalls
+      });
     }
+    for (const chunk of chunkArray(bowlingRows, UPSERT_CHUNK_SIZE)) {
+      const { error: bowlingError } = await supabase
+        .from("bowling_statistics")
+        .upsert(chunk, { onConflict: "match_id,innings_id,player_id" });
+      if (bowlingError) throw bowlingError;
+    }
+
+    const fieldingRows = [];
     for (const line of aggregate.fielding) {
-      const playerId = playerIds.get(line.player) ?? (await upsertPlayer(supabase, line.player));
-      await supabase.from("fielding_statistics").upsert(
-        {
-          match_id: dbMatch.id,
-          innings_id: dbInnings.id,
-          player_id: playerId,
-          team_id: bowlingTeamId,
-          catches: line.catches,
-          stumpings: line.stumpings,
-          run_outs: line.runOuts
-        },
-        { onConflict: "match_id,innings_id,player_id" }
-      );
+      if (!hasPlayerName(line.player)) continue;
+      const playerId = await resolvePlayerId(supabase, playerIds, line.player);
+      fieldingRows.push({
+        match_id: dbMatch.id,
+        innings_id: dbInnings.id,
+        player_id: playerId,
+        team_id: bowlingTeamId,
+        catches: line.catches,
+        stumpings: line.stumpings,
+        run_outs: line.runOuts
+      });
+    }
+    for (const chunk of chunkArray(fieldingRows, UPSERT_CHUNK_SIZE)) {
+      const { error: fieldingError } = await supabase
+        .from("fielding_statistics")
+        .upsert(chunk, { onConflict: "match_id,innings_id,player_id" });
+      if (fieldingError) throw fieldingError;
     }
   }
 
+  const playerMatchRows = [];
   for (const summary of aggregateMatchPlayerStats(match)) {
-    const playerId = playerIds.get(summary.player) ?? (await upsertPlayer(supabase, summary.player));
+    if (!hasPlayerName(summary.player)) continue;
+    const playerId = await resolvePlayerId(supabase, playerIds, summary.player);
     const teamId = teamIds.get(summary.team);
     if (!teamId) continue;
-    await supabase.from("player_match_statistics").upsert(
-      {
-        match_id: dbMatch.id,
-        player_id: playerId,
-        team_id: teamId,
-        format_id: formatId,
-        runs: summary.runs,
-        balls_faced: summary.ballsFaced,
-        wickets: summary.wickets,
-        balls_bowled: summary.ballsBowled,
-        runs_conceded: summary.runsConceded,
-        catches: summary.catches,
-        stumpings: summary.stumpings,
-        player_of_match: summary.playerOfMatch
-      },
-      { onConflict: "match_id,player_id" }
-    );
+    playerMatchRows.push({
+      match_id: dbMatch.id,
+      player_id: playerId,
+      team_id: teamId,
+      format_id: formatId,
+      runs: summary.runs,
+      balls_faced: summary.ballsFaced,
+      wickets: summary.wickets,
+      balls_bowled: summary.ballsBowled,
+      runs_conceded: summary.runsConceded,
+      catches: summary.catches,
+      stumpings: summary.stumpings,
+      player_of_match: summary.playerOfMatch
+    });
+  }
+  for (const chunk of chunkArray(playerMatchRows, UPSERT_CHUNK_SIZE)) {
+    const { error: playerMatchError } = await supabase
+      .from("player_match_statistics")
+      .upsert(chunk, { onConflict: "match_id,player_id" });
+    if (playerMatchError) throw playerMatchError;
   }
 
   return {

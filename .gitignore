@@ -22,6 +22,7 @@ all_json/
 data/raw/
 data/cricsheet/
 supabase/.temp/
+.tmp-cricsheet-*/
 
 # Keep small parser fixtures under data/sample/cricsheet tracked.
 !data/sample/
