@@ -1740,19 +1740,312 @@ main:focus {
   white-space: nowrap;
 }
 
+.explorer-panel,
+.match-card,
+.detail-hero-panel,
+.detail-stat-card,
+.scorecard-section,
+.entity-card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: 0 1px 0 rgba(16, 32, 26, 0.03);
+}
+
+.explorer-panel {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 26px;
+  padding: 18px;
+}
+
+.explorer-panel > p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.explorer-filter-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.2fr) repeat(2, minmax(150px, 0.75fr)) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.explorer-filter-form--matches {
+  grid-template-columns: minmax(220px, 1.4fr) repeat(6, minmax(130px, 0.75fr)) auto;
+}
+
+.explorer-filter-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.explorer-filter-form span,
+.match-card dt,
+.detail-facts-grid dt,
+.entity-card dt,
+.detail-stat-card p {
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.explorer-filter-form input,
+.explorer-filter-form select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: #fff;
+  color: var(--color-ink);
+  padding: 0 11px;
+}
+
+.explorer-filter-form button {
+  min-height: 42px;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-control);
+  background: var(--color-ink);
+  color: #fff;
+  font-weight: 850;
+  padding: 0 16px;
+}
+
+.match-results-list {
+  display: grid;
+  gap: 14px;
+}
+
+.match-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.9fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 20px;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.match-card:hover,
+.entity-card:hover {
+  border-color: rgba(19, 111, 67, 0.45);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.match-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.match-card h2,
+.entity-card h2 {
+  margin: 8px 0 0;
+  font-size: 22px;
+  line-height: 1.22;
+}
+
+.match-card h2 a:hover,
+.entity-card h2 a:hover,
+.match-card a:hover,
+.detail-facts-grid a:hover,
+.entity-card a:hover {
+  color: var(--color-primary-dark);
+}
+
+.match-card p,
+.entity-card p:not(.eyebrow) {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+}
+
+.match-card__facts,
+.detail-facts-grid,
+.entity-card dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.match-card__facts dd,
+.detail-facts-grid dd,
+.entity-card dd {
+  margin: 3px 0 0;
+  color: var(--color-ink);
+  font-weight: 850;
+}
+
+.detail-hero-panel {
+  margin-bottom: 22px;
+  padding: 20px;
+}
+
+.detail-facts-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.detail-facts-grid div,
+.entity-card dl div {
+  border-radius: 6px;
+  background: var(--color-surface-strong);
+  padding: 11px;
+}
+
+.detail-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.detail-stat-card {
+  padding: 18px;
+}
+
+.detail-stat-card p {
+  margin: 0;
+}
+
+.detail-stat-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 26px;
+  line-height: 1.08;
+}
+
+.detail-stat-card span {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-subtle);
+  font-size: 13px;
+}
+
+.quick-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 24px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.scorecard-section {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+  padding: 20px;
+}
+
+.scorecard-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: 14px;
+}
+
+.scorecard-header h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.scorecard-header strong {
+  border-radius: 6px;
+  background: var(--color-ink);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  padding: 11px 12px;
+  white-space: nowrap;
+}
+
+.scorecard-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.scorecard-grid h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.delivery-details {
+  display: grid;
+  gap: 14px;
+}
+
+.delivery-details summary {
+  width: fit-content;
+  min-height: 42px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-strong);
+  color: var(--color-ink);
+  font-weight: 850;
+  padding: 9px 13px;
+  cursor: pointer;
+}
+
+.entity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.entity-card {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.entity-card dl {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 @media (max-width: 1120px) {
   .player-filter-form,
   .player-results-grid,
-  .profile-stat-grid {
+  .profile-stat-grid,
+  .explorer-filter-form,
+  .explorer-filter-form--matches,
+  .detail-stat-grid,
+  .detail-facts-grid,
+  .entity-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .player-filter-form button {
+  .player-filter-form button,
+  .explorer-filter-form button {
     grid-column: 1 / -1;
   }
 
   .player-profile-header dl {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .match-card {
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 }
 
@@ -1763,7 +2056,14 @@ main:focus {
   .player-profile-header,
   .player-profile-header dl,
   .profile-stat-grid,
-  .profile-chart-grid {
+  .profile-chart-grid,
+  .explorer-filter-form,
+  .explorer-filter-form--matches,
+  .detail-stat-grid,
+  .detail-facts-grid,
+  .detail-grid,
+  .entity-grid,
+  .entity-card dl {
     grid-template-columns: 1fr;
   }
 
@@ -1779,5 +2079,17 @@ main:focus {
 
   .profile-chart__bars {
     overflow-x: auto;
+  }
+
+  .scorecard-header {
+    display: grid;
+  }
+
+  .scorecard-header strong {
+    width: fit-content;
+  }
+
+  .quick-link-row .button {
+    width: 100%;
   }
 }
