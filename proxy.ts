@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 const PLAYER_PROFILE_PATTERN = /^\/players\/([^/]+)\/?$/;
+const TEAM_PROFILE_PATTERN = /^\/teams\/([^/]+)\/?$/;
 const MATCH_DETAIL_PATTERN = /^\/matches\/([^/]+)\/?$/;
 const YEAR_DETAIL_PATTERN = /^\/years\/([^/]+)\/?$/;
 const TOURNAMENT_DETAIL_PATTERN = /^\/tournaments\/([^/]+)\/?$/;
@@ -85,6 +86,7 @@ function parseYear(value: string) {
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const playerMatch = pathname.match(PLAYER_PROFILE_PATTERN);
+  const teamMatch = pathname.match(TEAM_PROFILE_PATTERN);
   const matchMatch = pathname.match(MATCH_DETAIL_PATTERN);
   const yearMatch = pathname.match(YEAR_DETAIL_PATTERN);
   const tournamentMatch = pathname.match(TOURNAMENT_DETAIL_PATTERN);
@@ -95,6 +97,12 @@ export async function proxy(request: NextRequest) {
     const slug = playerMatch[1];
     if (await existsInTable("players", "slug", slug)) return NextResponse.next();
     return notFoundResponse("Player not found", `No player profile exists for ${slug} in the current Cricket Atlas dataset.`, "/players", "Back to players");
+  }
+
+  if (teamMatch) {
+    const slug = teamMatch[1];
+    if (await existsInTable("teams", "slug", slug)) return NextResponse.next();
+    return notFoundResponse("Team not found", `No team profile exists for ${slug} in the current Cricket Atlas dataset.`, "/teams", "Back to teams");
   }
 
   if (matchMatch) {
@@ -157,6 +165,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/players/:playerSlug",
+    "/teams/:teamSlug",
     "/matches/:matchId",
     "/years/:year",
     "/tournaments/:tournamentSlug",

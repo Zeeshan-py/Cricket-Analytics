@@ -6,38 +6,45 @@ export type RouteItem = {
 
 export const primaryNav: RouteItem[] = [
   { label: "Home", href: "/" },
-  { label: "Matches", href: "/matches" },
   { label: "Players", href: "/players" },
+  { label: "Matches", href: "/matches" },
   { label: "Teams", href: "/teams" },
   { label: "Tournaments", href: "/tournaments" },
   { label: "Years", href: "/years" },
   { label: "Analytics", href: "/analytics" },
   { label: "Records", href: "/records" },
-  { label: "Articles", href: "/articles" }
+  { label: "Search", href: "/search" }
 ];
 
 export const footerGroups: { title: string; links: RouteItem[] }[] = [
   {
-    title: "Main",
-    links: primaryNav.filter((item) => item.href !== "/")
-  },
-  {
-    title: "Cricket Sections",
+    title: "Explore",
     links: [
-      { label: "ODI Stats", href: "/analytics?format=odi" },
-      { label: "Test Stats", href: "/analytics?format=test" },
-      { label: "T20 Stats", href: "/analytics?format=t20" },
-      { label: "World Cup", href: "/tournaments/world-cup" }
+      { label: "Players", href: "/players" },
+      { label: "Matches", href: "/matches" },
+      { label: "Teams", href: "/teams" },
+      { label: "Tournaments", href: "/tournaments" },
+      { label: "Years", href: "/years" },
+      { label: "Search", href: "/search" }
     ]
   },
   {
-    title: "Company",
+    title: "Analytics",
     links: [
-      { label: "About", href: "/articles/about-cricket-atlas" },
-      { label: "Contact", href: "/articles/contact" },
-      { label: "Privacy Policy", href: "/articles/privacy-policy" },
-      { label: "Terms", href: "/articles/terms" },
-      { label: "Disclaimer", href: "/articles/disclaimer" }
+      { label: "Overview", href: "/analytics" },
+      { label: "Batting", href: "/analytics/batting" },
+      { label: "Bowling", href: "/analytics/bowling" },
+      { label: "Teams", href: "/analytics/teams" },
+      { label: "Compare Players", href: "/analytics/compare" },
+      { label: "Records", href: "/records" }
+    ]
+  },
+  {
+    title: "Formats",
+    links: [
+      { label: "ODI Stats", href: "/analytics?format=odi" },
+      { label: "Test Stats", href: "/analytics?format=test" },
+      { label: "T20 Stats", href: "/analytics?format=t20" }
     ]
   }
 ];

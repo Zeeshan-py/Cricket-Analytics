@@ -17,8 +17,7 @@ export function Footer() {
           </Link>
           <p>{siteConfig.description}</p>
           <p className="footer-note">
-            Public cricket statistics, editorial analysis, and dataset-backed pages. Advertising,
-            analytics, privacy, and consent surfaces can be added later without changing the core layout.
+            Data currently reflects the verified Supabase import only. Raw Cricsheet JSON files remain outside the repository and are not uploaded to storage.
           </p>
         </div>
 
@@ -34,7 +33,7 @@ export function Footer() {
         ))}
       </div>
       <div className="container footer-bottom">
-        <p>Demo foundation. Replace mock content with verified cricket datasets before publication.</p>
+        <p>Current public pages use real imported scorecards and reference data only.</p>
         <p>Copyright {new Date().getFullYear()} {siteConfig.name}</p>
       </div>
     </footer>
