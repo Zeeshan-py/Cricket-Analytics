@@ -5,9 +5,11 @@ const TEAM_PROFILE_PATTERN = /^\/teams\/([^/]+)\/?$/;
 const MATCH_DETAIL_PATTERN = /^\/matches\/([^/]+)\/?$/;
 const YEAR_DETAIL_PATTERN = /^\/years\/([^/]+)\/?$/;
 const TOURNAMENT_DETAIL_PATTERN = /^\/tournaments\/([^/]+)\/?$/;
+const ARTICLE_CATEGORY_PATTERN = /^\/articles\/category\/([^/]+)\/?$/;
 const ANALYTICS_YEAR_PATTERN = /^\/analytics\/year\/([^/]+)\/?$/;
 const ANALYTICS_FORMAT_PATTERN = /^\/analytics\/format\/([^/]+)\/?$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const ARTICLE_CATEGORY_SLUGS = new Set(["cricket-analytics", "cricket-records", "match-analysis", "player-statistics"]);
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (character) => {
@@ -65,17 +67,21 @@ async function existsInTable(table: string, column: string, value: string) {
   lookupUrl.searchParams.set("select", "id");
   lookupUrl.searchParams.set("limit", "1");
 
-  const response = await fetch(lookupUrl, {
-    headers: {
-      apikey: publishableKey,
-      authorization: `Bearer ${publishableKey}`
-    }
-  });
+  try {
+    const response = await fetch(lookupUrl, {
+      headers: {
+        apikey: publishableKey,
+        authorization: `Bearer ${publishableKey}`
+      }
+    });
 
-  if (!response.ok) return true;
+    if (!response.ok) return true;
 
-  const rows = (await response.json()) as { id: string }[];
-  return rows.length > 0;
+    const rows = (await response.json()) as { id: string }[];
+    return rows.length > 0;
+  } catch {
+    return true;
+  }
 }
 
 function parseYear(value: string) {
@@ -90,6 +96,7 @@ export async function proxy(request: NextRequest) {
   const matchMatch = pathname.match(MATCH_DETAIL_PATTERN);
   const yearMatch = pathname.match(YEAR_DETAIL_PATTERN);
   const tournamentMatch = pathname.match(TOURNAMENT_DETAIL_PATTERN);
+  const articleCategoryMatch = pathname.match(ARTICLE_CATEGORY_PATTERN);
   const analyticsYearMatch = pathname.match(ANALYTICS_YEAR_PATTERN);
   const analyticsFormatMatch = pathname.match(ANALYTICS_FORMAT_PATTERN);
 
@@ -130,6 +137,12 @@ export async function proxy(request: NextRequest) {
     return notFoundResponse("Tournament not found", `No tournament exists for ${slug} in the current Cricket Atlas dataset.`, "/tournaments", "Back to tournaments");
   }
 
+  if (articleCategoryMatch) {
+    const slug = articleCategoryMatch[1];
+    if (ARTICLE_CATEGORY_SLUGS.has(slug)) return NextResponse.next();
+    return notFoundResponse("Article category not found", `No article category exists for ${slug}.`, "/articles", "Back to articles");
+  }
+
   if (analyticsYearMatch) {
     const yearValue = analyticsYearMatch[1];
     const year = parseYear(yearValue);
@@ -150,9 +163,14 @@ export async function proxy(request: NextRequest) {
     formatUrl.searchParams.set("slug", `eq.${slug}`);
     formatUrl.searchParams.set("select", "id");
     formatUrl.searchParams.set("limit", "1");
-    const formatResponse = await fetch(formatUrl, { headers: { apikey: publishableKey, authorization: `Bearer ${publishableKey}` } });
-    if (!formatResponse.ok) return NextResponse.next();
-    const formats = (await formatResponse.json()) as { id: string }[];
+    let formats: { id: string }[] = [];
+    try {
+      const formatResponse = await fetch(formatUrl, { headers: { apikey: publishableKey, authorization: `Bearer ${publishableKey}` } });
+      if (!formatResponse.ok) return NextResponse.next();
+      formats = (await formatResponse.json()) as { id: string }[];
+    } catch {
+      return NextResponse.next();
+    }
     const formatId = formats[0]?.id;
     if (!formatId) return notFoundResponse("Format analytics not found", `No format exists for ${slug} in the current Cricket Atlas dataset.`, "/analytics", "Back to analytics");
     if (await existsInTable("matches", "format_id", formatId)) return NextResponse.next();
@@ -169,6 +187,7 @@ export const config = {
     "/matches/:matchId",
     "/years/:year",
     "/tournaments/:tournamentSlug",
+    "/articles/category/:categorySlug",
     "/analytics/year/:year",
     "/analytics/format/:formatSlug"
   ]

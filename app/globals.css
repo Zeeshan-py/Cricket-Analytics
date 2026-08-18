@@ -32,6 +32,7 @@ html {
 
 body {
   margin: 0;
+  overflow-x: clip;
   background:
     linear-gradient(180deg, #f7faf5 0%, #fbfcfa 46%, #f7faf5 100%);
   color: var(--color-ink);
@@ -200,6 +201,7 @@ main:focus {
 .search-bar {
   position: relative;
   display: flex;
+  min-width: 0;
   min-height: 44px;
   align-items: center;
   gap: 8px;
@@ -219,6 +221,7 @@ main:focus {
 }
 
 .search-bar input {
+  width: 100%;
   min-width: 0;
   flex: 1;
   border: 0;
@@ -369,6 +372,15 @@ main:focus {
   line-height: 1.02;
 }
 
+.hero-copy,
+.hero-dashboard,
+.dashboard-header,
+.score-strip,
+.mini-table,
+.chart-panel {
+  min-width: 0;
+}
+
 .hero-copy > p:not(.eyebrow):not(.demo-note) {
   max-width: 720px;
   margin: 22px 0 0;
@@ -386,6 +398,7 @@ main:focus {
 
 .button {
   display: inline-flex;
+  max-width: 100%;
   min-height: 48px;
   align-items: center;
   justify-content: center;
@@ -394,6 +407,9 @@ main:focus {
   font-weight: 850;
   line-height: 1;
   padding: 0 18px;
+  text-align: center;
+  overflow-wrap: anywhere;
+  white-space: normal;
   transition:
     background 180ms ease,
     border-color 180ms ease,
@@ -492,9 +508,11 @@ main:focus {
 }
 
 .score-strip span {
+  min-width: 0;
   color: var(--color-muted);
   font-size: 13px;
   font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .score-strip span:last-child {
@@ -582,7 +600,9 @@ main:focus {
 
 .mini-table span,
 .mini-table strong {
+  min-width: 0;
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .section-block {
@@ -1845,12 +1865,56 @@ main:focus {
     grid-column: 1 / -1;
   }
 
+  .dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-pill {
+    width: 100%;
+    text-align: center;
+  }
+
+  .mini-table > div {
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.65fr) minmax(0, 0.75fr);
+    padding-inline: 10px;
+  }
+
   .year-grid,
   .year-grid--wide {
     grid-template-columns: 1fr;
   }
 
   .player-card dl {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 340px) {
+  .container {
+    width: min(100% - 16px, var(--container));
+  }
+
+  .brand-name {
+    max-width: 132px;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-copy h1 {
+    font-size: 30px;
+  }
+
+  .search-bar--hero,
+  .search-bar--page {
+    grid-template-columns: 1fr;
+  }
+
+  .search-bar__icon {
+    display: none;
+  }
+
+  .mini-table > div {
     grid-template-columns: 1fr;
   }
 }
