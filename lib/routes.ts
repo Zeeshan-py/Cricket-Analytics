@@ -13,6 +13,7 @@ export const primaryNav: RouteItem[] = [
   { label: "Years", href: "/years" },
   { label: "Analytics", href: "/analytics" },
   { label: "Records", href: "/records" },
+  { label: "Articles", href: "/articles" },
   { label: "Search", href: "/search" }
 ];
 
@@ -25,6 +26,7 @@ export const footerGroups: { title: string; links: RouteItem[] }[] = [
       { label: "Teams", href: "/teams" },
       { label: "Tournaments", href: "/tournaments" },
       { label: "Years", href: "/years" },
+      { label: "Articles", href: "/articles" },
       { label: "Search", href: "/search" }
     ]
   },

@@ -23,8 +23,8 @@ export async function generateMetadata({ searchParams }: SearchPageProps) {
 
   return createPageMetadata({
     title: query ? `Search Results for ${query}` : "Search Cricket Statistics",
-    description: "Search players, teams, matches, tournaments, and years from the current Cricket Atlas Supabase dataset.",
-    path: query ? `/search?q=${encodeURIComponent(query)}` : "/search",
+    description: "Search players, teams, matches, tournaments, years, and articles from the current Cricket Atlas site index.",
+    path: "/search",
     noIndex: Boolean(query)
   });
 }
@@ -66,7 +66,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <FoundationPage
           eyebrow="Search"
           title="Search Cricket Atlas"
-          description="Search the real Supabase-backed index for players, teams, matches, tournaments, and years. Deliveries are intentionally excluded for performance."
+          description="Search the real Supabase-backed index for players, teams, matches, tournaments, years, and local articles. Deliveries are intentionally excluded for performance."
           breadcrumbs={[
             { label: "Home", href: "/" },
             { label: "Search" }
@@ -95,11 +95,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 <ResultGroup title="Matches" results={results.groups.matches} />
                 <ResultGroup title="Tournaments" results={results.groups.tournaments} />
                 <ResultGroup title="Years" results={results.groups.years} />
+                <ResultGroup title="Articles" results={results.groups.articles} />
               </div>
             ) : (
               <EmptyState
                 title={`No results for "${results.query}"`}
-                description="No matching players, teams, matches, tournaments, or years exist in the current verified sample. Try a broader term."
+                description="No matching players, teams, matches, tournaments, years, or articles exist in the current site index. Try a broader term."
                 actionHref="/search"
                 actionLabel="Clear search"
               />

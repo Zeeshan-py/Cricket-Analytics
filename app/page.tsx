@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArticleCard } from "@/components/ui/ArticleCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -255,6 +256,21 @@ export default async function HomePage() {
                   <small>{record.context}</small>
                 </Link>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section-block section-block--tinted">
+          <div className="container">
+            <SectionHeader
+              eyebrow="Cricket insights"
+              title="Latest articles"
+              description="Educational guides explain the formulas and context behind the statistics shown across the site."
+              actionHref="/articles"
+              actionLabel="View Articles"
+            />
+            <div className="article-grid">
+              {data.articles.map((article) => <ArticleCard key={article.slug} article={article} />)}
             </div>
           </div>
         </section>

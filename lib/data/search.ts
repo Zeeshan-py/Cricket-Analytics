@@ -1,4 +1,5 @@
 import "server-only";
+import { searchArticles as searchLocalArticles } from "@/lib/content/articles";
 import { DataAccessNotConfiguredError, isMissingSupabaseConfig } from "@/lib/data/errors";
 import { formatMatchTitle, getMatches, matchResultLabel } from "@/lib/data/matches";
 import { getTournaments } from "@/lib/data/tournaments";
@@ -46,6 +47,7 @@ export type GlobalSearchResult = {
     matches: SearchRef[];
     tournaments: SearchRef[];
     years: SearchRef[];
+    articles: SearchRef[];
   };
 };
 
@@ -169,6 +171,19 @@ export async function searchYears(query: string, limit?: number): Promise<Search
   }));
 }
 
+export async function searchArticles(query: string, limit?: number): Promise<SearchRef[]> {
+  const q = cleanQuery(query);
+  if (!q) return [];
+
+  const articles = await searchLocalArticles(q, limitValue(limit));
+  return articles.map((article) => ({
+    title: article.title,
+    href: `/articles/${article.slug}`,
+    description: article.excerpt,
+    meta: [article.category, article.readingTime].filter(Boolean).join(" | ")
+  }));
+}
+
 export async function globalSearch(query: string | null | undefined, limit = DEFAULT_LIMIT): Promise<GlobalSearchResult> {
   const q = cleanQuery(query);
 
@@ -176,23 +191,24 @@ export async function globalSearch(query: string | null | undefined, limit = DEF
     return {
       query: "",
       total: 0,
-      groups: { players: [], teams: [], matches: [], tournaments: [], years: [] }
+      groups: { players: [], teams: [], matches: [], tournaments: [], years: [], articles: [] }
     };
   }
 
   try {
-    const [players, teams, matches, tournaments, years] = await Promise.all([
+    const [players, teams, matches, tournaments, years, articles] = await Promise.all([
       searchPlayers(q, limit),
       searchTeams(q, limit),
       searchMatches(q, limit),
       searchTournaments(q, limit),
-      searchYears(q, limit)
+      searchYears(q, limit),
+      searchArticles(q, limit)
     ]);
 
     return {
       query: q,
-      total: players.length + teams.length + matches.length + tournaments.length + years.length,
-      groups: { players, teams, matches, tournaments, years }
+      total: players.length + teams.length + matches.length + tournaments.length + years.length + articles.length,
+      groups: { players, teams, matches, tournaments, years, articles }
     };
   } catch (error) {
     if (isMissingSupabaseConfig(error)) throw new DataAccessNotConfiguredError();

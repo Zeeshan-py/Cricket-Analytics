@@ -9,15 +9,15 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   applicationName: siteConfig.name,
   title: {
-    default: `${siteConfig.name} - Cricket Analytics and Statistics`,
-    template: `%s | ${siteConfig.name}`
+    default: siteConfig.defaultTitle,
+    template: siteConfig.titleTemplate
   },
   description: siteConfig.description,
   alternates: {
     canonical: "/"
   },
   openGraph: {
-    title: `${siteConfig.name} - Cricket Analytics and Statistics`,
+    title: siteConfig.defaultTitle,
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
@@ -26,17 +26,14 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} - Cricket Analytics and Statistics`,
+    title: siteConfig.defaultTitle,
     description: siteConfig.description
   },
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg"
   },
-  robots: {
-    index: true,
-    follow: true
-  }
+  robots: siteConfig.defaultRobots
 };
 
 export const viewport: Viewport = {
