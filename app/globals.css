@@ -2022,15 +2022,116 @@ main:focus {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.analytics-filter-form {
+  grid-template-columns: repeat(4, minmax(150px, 1fr)) auto;
+}
+
+.analytics-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 24px 0;
+}
+
+.analytics-chart-panel,
+.comparison-panel {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: 0 1px 0 rgba(16, 32, 26, 0.03);
+  padding: 20px;
+}
+
+.analytics-chart-panel h2,
+.comparison-panel h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.analytics-chart-panel p {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+}
+
+.analytics-chart {
+  width: 100%;
+  height: 320px;
+  margin-top: 16px;
+}
+
+.chart-empty {
+  display: grid;
+  min-height: 220px;
+  margin-top: 16px;
+  place-items: center;
+  border: 1px dashed var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-strong);
+  color: var(--color-muted);
+  font-weight: 850;
+  text-align: center;
+}
+
+.comparison-filter-form {
+  grid-template-columns: repeat(2, minmax(220px, 1fr)) auto;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.comparison-panel dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 0;
+}
+
+.comparison-panel dt {
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.comparison-panel dd {
+  margin: 4px 0 0;
+  color: var(--color-ink);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.comparison-panel dl div {
+  border-radius: 6px;
+  background: var(--color-surface-strong);
+  padding: 10px;
+}
+
+.records-grid--dataset {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.record-card small {
+  display: block;
+  margin-top: 12px;
+  color: var(--color-subtle);
+  font-size: 13px;
+}
+
 @media (max-width: 1120px) {
   .player-filter-form,
   .player-results-grid,
   .profile-stat-grid,
   .explorer-filter-form,
   .explorer-filter-form--matches,
+  .analytics-filter-form,
   .detail-stat-grid,
   .detail-facts-grid,
-  .entity-grid {
+  .entity-grid,
+  .records-grid--dataset {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2059,11 +2160,15 @@ main:focus {
   .profile-chart-grid,
   .explorer-filter-form,
   .explorer-filter-form--matches,
+  .analytics-filter-form,
+  .analytics-chart-grid,
+  .comparison-grid,
   .detail-stat-grid,
   .detail-facts-grid,
   .detail-grid,
   .entity-grid,
-  .entity-card dl {
+  .entity-card dl,
+  .records-grid--dataset {
     grid-template-columns: 1fr;
   }
 
@@ -2091,5 +2196,13 @@ main:focus {
 
   .quick-link-row .button {
     width: 100%;
+  }
+
+  .analytics-chart {
+    height: 280px;
+  }
+
+  .comparison-panel dl {
+    grid-template-columns: 1fr;
   }
 }

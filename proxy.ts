@@ -4,6 +4,8 @@ const PLAYER_PROFILE_PATTERN = /^\/players\/([^/]+)\/?$/;
 const MATCH_DETAIL_PATTERN = /^\/matches\/([^/]+)\/?$/;
 const YEAR_DETAIL_PATTERN = /^\/years\/([^/]+)\/?$/;
 const TOURNAMENT_DETAIL_PATTERN = /^\/tournaments\/([^/]+)\/?$/;
+const ANALYTICS_YEAR_PATTERN = /^\/analytics\/year\/([^/]+)\/?$/;
+const ANALYTICS_FORMAT_PATTERN = /^\/analytics\/format\/([^/]+)\/?$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function escapeHtml(value: string) {
@@ -86,6 +88,8 @@ export async function proxy(request: NextRequest) {
   const matchMatch = pathname.match(MATCH_DETAIL_PATTERN);
   const yearMatch = pathname.match(YEAR_DETAIL_PATTERN);
   const tournamentMatch = pathname.match(TOURNAMENT_DETAIL_PATTERN);
+  const analyticsYearMatch = pathname.match(ANALYTICS_YEAR_PATTERN);
+  const analyticsFormatMatch = pathname.match(ANALYTICS_FORMAT_PATTERN);
 
   if (playerMatch) {
     const slug = playerMatch[1];
@@ -118,9 +122,45 @@ export async function proxy(request: NextRequest) {
     return notFoundResponse("Tournament not found", `No tournament exists for ${slug} in the current Cricket Atlas dataset.`, "/tournaments", "Back to tournaments");
   }
 
+  if (analyticsYearMatch) {
+    const yearValue = analyticsYearMatch[1];
+    const year = parseYear(yearValue);
+    if (!year) {
+      return notFoundResponse("Year analytics not found", `${yearValue} is not a valid analytics year route.`, "/analytics", "Back to analytics");
+    }
+    if (await existsInTable("matches", "season_year", String(year))) return NextResponse.next();
+    return notFoundResponse("Year analytics not found", `No analytics exist for ${year} in the current Cricket Atlas dataset.`, "/analytics", "Back to analytics");
+  }
+
+  if (analyticsFormatMatch) {
+    const slug = analyticsFormatMatch[1];
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    if (!supabaseUrl || !publishableKey) return NextResponse.next();
+
+    const formatUrl = new URL("/rest/v1/formats", supabaseUrl);
+    formatUrl.searchParams.set("slug", `eq.${slug}`);
+    formatUrl.searchParams.set("select", "id");
+    formatUrl.searchParams.set("limit", "1");
+    const formatResponse = await fetch(formatUrl, { headers: { apikey: publishableKey, authorization: `Bearer ${publishableKey}` } });
+    if (!formatResponse.ok) return NextResponse.next();
+    const formats = (await formatResponse.json()) as { id: string }[];
+    const formatId = formats[0]?.id;
+    if (!formatId) return notFoundResponse("Format analytics not found", `No format exists for ${slug} in the current Cricket Atlas dataset.`, "/analytics", "Back to analytics");
+    if (await existsInTable("matches", "format_id", formatId)) return NextResponse.next();
+    return notFoundResponse("Format analytics not found", `No matches exist for ${slug} in the current Cricket Atlas dataset.`, "/analytics", "Back to analytics");
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/players/:playerSlug", "/matches/:matchId", "/years/:year", "/tournaments/:tournamentSlug"]
+  matcher: [
+    "/players/:playerSlug",
+    "/matches/:matchId",
+    "/years/:year",
+    "/tournaments/:tournamentSlug",
+    "/analytics/year/:year",
+    "/analytics/format/:formatSlug"
+  ]
 };

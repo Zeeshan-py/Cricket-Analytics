@@ -129,6 +129,7 @@ export default async function YearDetailPage({ params }: YearDetailPageProps) {
 
         <section className="quick-link-row" aria-label="Year links">
           <Link className="button button--secondary" href={`/matches?year=${year}`}>Matches from {year}</Link>
+          <Link className="button button--secondary" href={`/analytics/year/${year}`}>Year analytics</Link>
           <Link className="button button--secondary" href="/players">Players</Link>
           <Link className="button button--secondary" href={`/tournaments?year=${year}`}>Tournaments</Link>
         </section>

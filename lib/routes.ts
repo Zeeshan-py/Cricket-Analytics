@@ -44,6 +44,10 @@ export const footerGroups: { title: string; links: RouteItem[] }[] = [
 
 export const sitemapStaticRoutes = [
   ...primaryNav.map((item) => item.href),
+  "/analytics/batting",
+  "/analytics/bowling",
+  "/analytics/teams",
+  "/analytics/compare",
   "/search"
 ];
 

@@ -153,6 +153,7 @@ export default async function TournamentDetailPage({ params, searchParams }: Tou
 
         <section className="quick-link-row" aria-label="Tournament links">
           <Link className="button button--secondary" href={`/matches?tournament=${detail.tournament.slug}`}>Tournament matches</Link>
+          {detail.tournament.formats?.slug ? <Link className="button button--secondary" href={`/analytics/format/${detail.tournament.formats.slug}`}>Format analytics</Link> : null}
           {detail.tournament.season_year ? <Link className="button button--secondary" href={`/years/${detail.tournament.season_year}`}>Year overview</Link> : null}
           <Link className="button button--secondary" href="/players">Players</Link>
         </section>

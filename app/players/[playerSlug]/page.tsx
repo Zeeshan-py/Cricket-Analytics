@@ -165,6 +165,13 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
           </div>
         </section>
 
+        <section className="quick-link-row" aria-label="Player analytics links">
+          <Link className="button button--secondary" href={`/analytics?player=${profile.player.slug}`}>Analytics</Link>
+          <Link className="button button--secondary" href={`/analytics/compare?player1=${profile.player.slug}`}>Compare</Link>
+          <Link className="button button--secondary" href="/analytics/batting">Batting leaders</Link>
+          <Link className="button button--secondary" href="/analytics/bowling">Bowling leaders</Link>
+        </section>
+
         <section className="profile-stat-grid" aria-label="Career overview">
           <StatCard label="Matches" value={formatNumber(profile.overview.matches)} />
           <StatCard label="Runs" value={formatNumber(profile.overview.runs)} />
