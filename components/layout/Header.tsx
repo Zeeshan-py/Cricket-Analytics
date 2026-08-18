@@ -46,6 +46,10 @@ export function Header() {
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const isExploreActive = exploreNav.some((item) => isActive(item.href));
+  const closeMobileNavigation = () => {
+    setIsOpen(false);
+    setIsMobileExploreOpen(false);
+  };
 
   return (
     <header className="site-header">
@@ -121,9 +125,8 @@ export function Header() {
 
       <div id="mobile-navigation" className={`mobile-nav-panel ${isOpen ? "is-open" : ""}`}>
         <div className="container mobile-nav-inner">
-          <SearchBar id="mobile-search" />
           <nav aria-label="Mobile navigation">
-            <Link href="/" aria-current={isActive("/") ? "page" : undefined}>
+            <Link href="/" aria-current={isActive("/") ? "page" : undefined} onClick={closeMobileNavigation}>
               Home
             </Link>
             <div className="mobile-explore">
@@ -145,6 +148,7 @@ export function Header() {
                       key={item.href}
                       href={item.href}
                       aria-current={isActive(item.href) ? "page" : undefined}
+                      onClick={closeMobileNavigation}
                     >
                       {item.label}
                     </Link>
@@ -159,11 +163,15 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   aria-current={isActive(item.href) ? "page" : undefined}
+                  onClick={closeMobileNavigation}
                 >
                   {item.label}
                 </Link>
               ))}
           </nav>
+          <div className="mobile-menu-search">
+            <SearchBar id="mobile-search" />
+          </div>
         </div>
       </div>
     </header>

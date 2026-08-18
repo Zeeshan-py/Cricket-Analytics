@@ -131,11 +131,12 @@ main:focus {
   display: flex;
   min-height: var(--header-height);
   align-items: center;
-  gap: 20px;
+  gap: 18px;
 }
 
 .brand-link {
   display: inline-flex;
+  flex: 0 0 auto;
   min-height: 44px;
   align-items: center;
   gap: 10px;
@@ -167,9 +168,10 @@ main:focus {
 
 .desktop-nav {
   display: flex;
-  flex: 1;
+  flex: 0 1 auto;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .desktop-nav a,
@@ -251,7 +253,9 @@ main:focus {
 }
 
 .header-search {
-  width: 320px;
+  width: clamp(260px, 28vw, 340px);
+  flex: 0 1 340px;
+  margin-left: auto;
 }
 
 .search-bar {
@@ -370,6 +374,8 @@ main:focus {
 
 .mobile-menu-button {
   display: none;
+  flex: 0 0 44px;
+  margin-left: auto;
 }
 
 .mobile-nav-panel {
@@ -385,7 +391,6 @@ main:focus {
 .mobile-nav-panel nav {
   display: grid;
   gap: 4px;
-  margin-top: 12px;
 }
 
 .mobile-nav-panel nav a {
@@ -416,6 +421,10 @@ main:focus {
 
 .mobile-explore-panel a {
   background: rgba(220, 239, 229, 0.35);
+}
+
+.mobile-menu-search {
+  margin-top: 14px;
 }
 
 .hero-section {
@@ -1737,7 +1746,7 @@ main:focus {
   }
 
   .header-search {
-    margin-left: auto;
+    display: none;
   }
 
   .mobile-menu-button {
@@ -1793,12 +1802,12 @@ main:focus {
     gap: 12px;
   }
 
-  .brand-name {
-    font-size: 16px;
+  .brand-link {
+    min-width: 0;
   }
 
-  .header-search {
-    display: none;
+  .brand-name {
+    font-size: 16px;
   }
 
   .hero-grid {
