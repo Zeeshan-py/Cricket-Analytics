@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { GoogleAnalytics } from "@/components/seo/GoogleAnalytics";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </main>
         <Footer />
         <StructuredData data={websiteJsonLd} />
+        <GoogleAnalytics />
       </body>
     </html>
   );
