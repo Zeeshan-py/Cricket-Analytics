@@ -2,21 +2,50 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { CloseIcon, MenuIcon } from "@/components/ui/Icon";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDownIcon, CloseIcon, MenuIcon } from "@/components/ui/Icon";
 import { SearchBar } from "@/components/ui/SearchBar";
-import { primaryNav } from "@/lib/routes";
+import { exploreNav, primaryNav } from "@/lib/routes";
 import { siteConfig } from "@/lib/site";
 
 export function Header() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isExploreOpen, setIsExploreOpen] = useState(false);
+  const [isMobileExploreOpen, setIsMobileExploreOpen] = useState(false);
+  const exploreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setIsOpen(false);
+    setIsExploreOpen(false);
+    setIsMobileExploreOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!isExploreOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!exploreRef.current?.contains(event.target as Node)) {
+        setIsExploreOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsExploreOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isExploreOpen]);
+
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const isExploreActive = exploreNav.some((item) => isActive(item.href));
 
   return (
     <header className="site-header">
@@ -31,15 +60,47 @@ export function Header() {
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {primaryNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
+          <Link href="/" aria-current={isActive("/") ? "page" : undefined}>
+            Home
+          </Link>
+          <div className="desktop-nav-group" ref={exploreRef}>
+            <button
+              className="desktop-nav-trigger"
+              type="button"
+              aria-expanded={isExploreOpen}
+              aria-controls="desktop-explore-menu"
+              data-active={isExploreActive ? "true" : undefined}
+              onClick={() => setIsExploreOpen((value) => !value)}
             >
-              {item.label}
-            </Link>
-          ))}
+              Explore
+              <ChevronDownIcon />
+            </button>
+            {isExploreOpen ? (
+              <div id="desktop-explore-menu" className="desktop-nav-menu">
+                {exploreNav.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={isActive(item.href) ? "page" : undefined}
+                    onClick={() => setIsExploreOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          {primaryNav
+            .filter((item) => item.href !== "/")
+            .map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
         </nav>
 
         <div className="header-search">
@@ -62,15 +123,46 @@ export function Header() {
         <div className="container mobile-nav-inner">
           <SearchBar id="mobile-search" />
           <nav aria-label="Mobile navigation">
-            {primaryNav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={isActive(item.href) ? "page" : undefined}
+            <Link href="/" aria-current={isActive("/") ? "page" : undefined}>
+              Home
+            </Link>
+            <div className="mobile-explore">
+              <button
+                className="mobile-explore-toggle"
+                type="button"
+                aria-expanded={isMobileExploreOpen}
+                aria-controls="mobile-explore-menu"
+                data-active={isExploreActive ? "true" : undefined}
+                onClick={() => setIsMobileExploreOpen((value) => !value)}
               >
-                {item.label}
-              </Link>
-            ))}
+                Explore
+                <ChevronDownIcon />
+              </button>
+              {isMobileExploreOpen ? (
+                <div id="mobile-explore-menu" className="mobile-explore-panel">
+                  {exploreNav.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      aria-current={isActive(item.href) ? "page" : undefined}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            {primaryNav
+              .filter((item) => item.href !== "/")
+              .map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              ))}
           </nav>
         </div>
       </div>

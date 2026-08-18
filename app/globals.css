@@ -169,29 +169,85 @@ main:focus {
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .desktop-nav a,
-.mobile-nav-panel nav a {
+.desktop-nav-trigger,
+.mobile-nav-panel nav a,
+.mobile-explore-toggle {
   min-height: 44px;
+  border: 0;
   border-radius: var(--radius-control);
+  background: transparent;
   color: var(--color-muted);
   font-size: 14px;
   font-weight: 700;
   line-height: 1;
   padding: 15px 10px;
+  cursor: pointer;
   transition:
     background 180ms ease,
     color 180ms ease;
 }
 
+.desktop-nav-trigger,
+.mobile-explore-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.desktop-nav-trigger svg,
+.mobile-explore-toggle svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 180ms ease;
+}
+
+.desktop-nav-trigger[aria-expanded="true"] svg,
+.mobile-explore-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
 .desktop-nav a:hover,
 .desktop-nav a[aria-current="page"],
+.desktop-nav-trigger:hover,
+.desktop-nav-trigger[data-active="true"],
 .mobile-nav-panel nav a:hover,
-.mobile-nav-panel nav a[aria-current="page"] {
+.mobile-nav-panel nav a[aria-current="page"],
+.mobile-explore-toggle:hover,
+.mobile-explore-toggle[data-active="true"] {
   background: var(--color-primary-soft);
   color: var(--color-primary-dark);
+}
+
+.desktop-nav-group {
+  position: relative;
+}
+
+.desktop-nav-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 120;
+  display: grid;
+  min-width: 220px;
+  gap: 2px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.desktop-nav-menu a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  padding-inline: 12px;
+  white-space: nowrap;
 }
 
 .header-search {
@@ -336,6 +392,30 @@ main:focus {
   display: flex;
   align-items: center;
   padding-inline: 12px;
+}
+
+.mobile-explore {
+  display: grid;
+  gap: 4px;
+}
+
+.mobile-explore-toggle {
+  width: 100%;
+  justify-content: space-between;
+  padding-inline: 12px;
+  text-align: left;
+}
+
+.mobile-explore-panel {
+  display: grid;
+  gap: 4px;
+  margin-left: 12px;
+  border-left: 2px solid var(--color-primary-soft);
+  padding-left: 8px;
+}
+
+.mobile-explore-panel a {
+  background: rgba(220, 239, 229, 0.35);
 }
 
 .hero-section {

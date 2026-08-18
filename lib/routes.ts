@@ -6,15 +6,17 @@ export type RouteItem = {
 
 export const primaryNav: RouteItem[] = [
   { label: "Home", href: "/" },
+  { label: "Analytics", href: "/analytics" },
+  { label: "Articles", href: "/articles" }
+];
+
+export const exploreNav: RouteItem[] = [
   { label: "Players", href: "/players" },
   { label: "Matches", href: "/matches" },
   { label: "Teams", href: "/teams" },
   { label: "Tournaments", href: "/tournaments" },
   { label: "Years", href: "/years" },
-  { label: "Analytics", href: "/analytics" },
-  { label: "Records", href: "/records" },
-  { label: "Articles", href: "/articles" },
-  { label: "Search", href: "/search" }
+  { label: "Records", href: "/records" }
 ];
 
 export const footerGroups: { title: string; links: RouteItem[] }[] = [
@@ -53,6 +55,7 @@ export const footerGroups: { title: string; links: RouteItem[] }[] = [
 
 export const sitemapStaticRoutes = [
   ...primaryNav.map((item) => item.href),
+  ...exploreNav.map((item) => item.href),
   "/analytics/batting",
   "/analytics/bowling",
   "/analytics/teams",
