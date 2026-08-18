@@ -97,7 +97,6 @@ export default async function HomePage() {
                 variant="hero"
                 placeholder="Search players, teams, matches, tournaments, years..."
               />
-              <p className="demo-note">Dataset status: verified 50-match Cricsheet sample plus reference CSV data. No synthetic records are shown.</p>
             </div>
 
             <div className="hero-dashboard" aria-label="Current dataset summary">
