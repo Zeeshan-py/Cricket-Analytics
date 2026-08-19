@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { GoogleAdSense } from "@/components/seo/GoogleAdSense";
 import { GoogleAnalytics } from "@/components/seo/GoogleAnalytics";
+import { GoogleTagManager, GoogleTagManagerNoScript } from "@/components/seo/GoogleTagManager";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
+        <GoogleTagManagerNoScript />
         <a className="skip-link" href="#main-content">
           Skip to main content
         </a>
@@ -73,6 +75,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <StructuredData data={websiteJsonLd} />
         <GoogleAnalytics />
         <GoogleAdSense />
+        <GoogleTagManager />
       </body>
     </html>
   );
