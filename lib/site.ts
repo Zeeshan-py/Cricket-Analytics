@@ -1,6 +1,8 @@
+const productionSiteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://cricatlas.netlify.app").replace(/\/$/, "");
+
 export const siteConfig = {
   name: "Cricket Atlas",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.cricketatlas.com",
+  url: productionSiteUrl,
   defaultTitle: "Cricket Analytics & Statistics",
   titleTemplate: "%s | Cricket Atlas",
   description:
