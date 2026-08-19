@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { GoogleAdSense } from "@/components/seo/GoogleAdSense";
 import { GoogleAnalytics } from "@/components/seo/GoogleAnalytics";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { siteConfig } from "@/lib/site";
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Footer />
         <StructuredData data={websiteJsonLd} />
         <GoogleAnalytics />
+        <GoogleAdSense />
       </body>
     </html>
   );
